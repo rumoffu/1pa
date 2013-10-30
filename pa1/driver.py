@@ -25,11 +25,11 @@ def main():
 	##print " frame: \n%s\n" % ptcloud_frame
 
 	for i in range(len(ptcloud_frame)):
-		frame_d = findFrame(ptcloud_d, ptcloud_frame[i][0]) #frame is ptclouds d, a, c
-		frame_a = findFrame(ptcloud_a, ptcloud_frame[i][1]) #frame is ptclouds d, a, c
+		frame_d = solveFrame(ptcloud_d, ptcloud_frame[i, 0]) #frame is ptclouds d, a, c
+		frame_a = solveFrame(ptcloud_a, ptcloud_frame[i, 1]) #frame is ptclouds d, a, c
 		frame_c = frame_d.inverse.dot(frame_a)
 		c_expected.append(frame_c.rotation*ptcloud_c + frame_c.displacement)
-'''		frame_d = findFrame(ptcloud_d, cloudframe)
+'''		frame_d = solveFrame(ptcloud_d, cloudframe)
 		frame_a = 
 			Frame F_C = (F_D.inverse()).dot(F_A);
 			PointCloud C = F_C.dot(c);
@@ -50,20 +50,16 @@ class Frame:
 		displace = -1*rot*self.displacement
 		return Frame(rot, displace)
 
-def __init__(self):
-	pass
 
-def findFrame(a, b):
+def solveFrame(a, b):
 	displacement = findDisplacement(a, b)
 	bnorm = b - displacement
 
-	abar = np.mean(a)
-	bbar = np.mean(b)
-		
-	
+	H(a, bnorm)	
 	return Frame(rot, displace)
 
 def findDisplacement(clouda, cloudb):
+	print getMidpoint(cloudb)
 	return getMidpoint(cloudb) - getMidpoint(clouda)
 	
 def getMidpoint(cloud):
@@ -81,10 +77,12 @@ def getMidpoint(cloud):
 		zsum += cloud[i, 2]
 	
 	size = len(cloud)
-	xyz.append(xsum/size)
-	xyz.append(ysum/size)
-	xyz.append(zsum/size)
+	xyz.append([xsum/size, ysum/size, zsum/size])
 	return matrix(xyz)
+
+def H(a, b):
+	import numpy as np
+	from numpy import matrix
 
 def readCalbody(txt):
 	calbody = open(txt, 'r')
