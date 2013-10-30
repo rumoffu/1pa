@@ -15,29 +15,70 @@ def main():
 	"""
 
 	#open data set
-	ptcloud_d = []
-	ptcloud_a = []
-	ptcloud_c = []
-	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody("../input_data/pa1-debug-a-calbody.txt")
-	ptcloud_frame = readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
+	#ptcloud_d = []
+	#ptcloud_a = []
+	#ptcloud_c = []
+	ptcloud_d, ptcloud_a, ptcloud_c = d.readCalbody("../input_data/pa1-debug-a-calbody.txt")
+	ptcloud_frame = d.readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
 
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
 
 	for i in range(len(ptcloud_frame)):
-		frame_d = findFrame(ptcloud_d, ptcloud_frame[i][0]) #frame is d, a, c
-		frame_a = findFrame(ptcloud_a, ptcloud_frame[i][1]) #frame is d, a, c
-		frame_c = frame_d
-		##print ptcloud_frame[i]
-	#for cloudframe in ptcloud_frame:
+		frame_d = findFrame(ptcloud_d, ptcloud_frame[i][0]) #frame is ptclouds d, a, c
+		frame_a = findFrame(ptcloud_a, ptcloud_frame[i][1]) #frame is ptclouds d, a, c
+		frame_c = frame_d.inverse.dot(frame_a)
+		c_expected.append(frame_c.rotation*ptcloud_c + frame_c.displacement)
 '''		frame_d = findFrame(ptcloud_d, cloudframe)
 		frame_a = 
 			Frame F_C = (F_D.inverse()).dot(F_A);
 			PointCloud C = F_C.dot(c);
 			Cs[i] = C;
 '''	
-def findFrame(bodycloud, readingscloud):
-	return 0
+class Frame:
+	def __init__(self, rotation, displacement):
+		self.rotation = rotation #matrix
+		self.displacement = displacement #matrix
+
+	def dot(self, otherFrame):
+		rot = self.rotation*otherFrame.rotation
+		displace = self.rotation*otherFrame.displacement + self.displacement
+		return Frame(rot, displace)
+	
+	def inverse(self):
+		rot = self.rotation.I #matrix inverse
+		displace = -1*rot*self.displacement
+		return Frame(rot, displace)
+
+def __init__(self):
+	pass
+
+def findFrame(a, b):
+	displacement = findDisplacement(a, b)
+	bnorm = b - displacement
+
+	abar = np.mean(a)
+	bbar = np.mean(b)
+		
+	
+	return Frame(rot, displace)
+
+def findDisplacement(clouda, cloudb):
+	return getMidpoint(cloudb) - getMidpoint(clouda)
+	
+def getMidpoint(cloud):
+	xyz = []
+	xsum = 0
+	ysum = 0
+	zsum = 0
+	for i in len(cloud):
+		xsum += cloud[i][0]
+		ysum += cloud[i][1]
+		zsum += cloud[i][2]
+	
+	size = len(cloud)
+	xyz.append(xsum/size, ysum/size, zsum/size)
+	return matrix(xyz)
 
 def readCalbody(txt):
 	calbody = open(txt, 'r')
@@ -59,7 +100,7 @@ def readCloud(openfile, num):
 		for xyz in openfile.readline().split(','):
 			row.append(float(xyz.strip()))
 		cloud.append(row)
-	return cloud
+	return matrix(cloud)
 
 def readCalreadings(txt):
 	ptcloud_frame = []
@@ -78,17 +119,17 @@ def readCalreadings(txt):
 		ptcloud_c = readCloud(calreadings, N_C)
 		ptcloud_frame.append([ptcloud_d, ptcloud_a, ptcloud_c])
 
-	return ptcloud_frame
+	return matrix(ptcloud_frame)
 
-'''
-	fdata = np.genfromtxt('sortedfred.csv', delimiter=',', skip_header=1,
-	                     skip_footer=0, names=['id', 'min'])
-	
-	ddata = np.genfromtxt('sorteddock.csv', delimiter=',', skip_header=1,
-	                     skip_footer=0, names=['id', 'min'])
-	
-	ax1.scatter(fdata['min'],ddata['min'],label='dock6', color='blue')
-'''
-	
+	'''
+		fdata = np.genfromtxt('sortedfred.csv', delimiter=',', skip_header=1,
+		                     skip_footer=0, names=['id', 'min'])
+		
+		ddata = np.genfromtxt('sorteddock.csv', delimiter=',', skip_header=1,
+		                     skip_footer=0, names=['id', 'min'])
+		
+		ax1.scatter(fdata['min'],ddata['min'],label='dock6', color='blue')
+	'''
+		
 if __name__ == '__main__':
     main()
