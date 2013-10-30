@@ -25,7 +25,10 @@ def main():
 	##print " frame: \n%s\n" % ptcloud_frame
 
 	for i in range(len(ptcloud_frame)):
-		print ptcloud_frame[i]
+		frame_d = findFrame(ptcloud_d, ptcloud_frame[i][0]) #frame is d, a, c
+		frame_a = findFrame(ptcloud_a, ptcloud_frame[i][1]) #frame is d, a, c
+		frame_c = frame_d
+		##print ptcloud_frame[i]
 	#for cloudframe in ptcloud_frame:
 '''		frame_d = findFrame(ptcloud_d, cloudframe)
 		frame_a = 
@@ -37,8 +40,6 @@ def findFrame(bodycloud, readingscloud):
 	return 0
 
 def readCalbody(txt):
-	import numpy as np
-
 	calbody = open(txt, 'r')
 	header = calbody.readline().split(',')
 	N_D = int(header[0].strip())
@@ -61,7 +62,6 @@ def readCloud(openfile, num):
 	return cloud
 
 def readCalreadings(txt):
-	import numpy as np
 	ptcloud_frame = []
 
 	calreadings = open(txt, 'r')
