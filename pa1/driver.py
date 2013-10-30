@@ -18,8 +18,8 @@ def main():
 	#ptcloud_d = []
 	#ptcloud_a = []
 	#ptcloud_c = []
-	ptcloud_d, ptcloud_a, ptcloud_c = d.readCalbody("../input_data/pa1-debug-a-calbody.txt")
-	ptcloud_frame = d.readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
+	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody("../input_data/pa1-debug-a-calbody.txt")
+	ptcloud_frame = readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
 
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
