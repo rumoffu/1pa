@@ -23,13 +23,22 @@ def main():
 
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
-	
+
+	for i in range(len(ptcloud_frame)):
+		print ptcloud_frame[i]
+	#for cloudframe in ptcloud_frame:
+'''		frame_d = findFrame(ptcloud_d, cloudframe)
+		frame_a = 
+			Frame F_C = (F_D.inverse()).dot(F_A);
+			PointCloud C = F_C.dot(c);
+			Cs[i] = C;
+'''	
+def findFrame(bodycloud, readingscloud):
+	return 0
+
 def readCalbody(txt):
 	import numpy as np
-	ptcloud_d = []
-	ptcloud_a = []
-	ptcloud_c = []
-	
+
 	calbody = open(txt, 'r')
 	header = calbody.readline().split(',')
 	N_D = int(header[0].strip())
@@ -37,19 +46,22 @@ def readCalbody(txt):
 	N_C = int(header[2].strip())
 	calbody_fn = header[3]
 
-	for i in range(N_D):
-		ptcloud_d.append(float(calbody.readline().split(',')[0].strip()))
-	for i in range(N_A):
-		ptcloud_a.append(float(calbody.readline().split(',')[1].strip()))
-	for i in range(N_C):
-		ptcloud_c.append(float(calbody.readline().split(',')[2].strip()))
+	ptcloud_d = readCloud(calbody, N_D)
+	ptcloud_a = readCloud(calbody, N_A)
+	ptcloud_c = readCloud(calbody, N_C)
 	return ptcloud_d, ptcloud_a, ptcloud_c
+
+def readCloud(openfile, num):
+	cloud = []
+	for i in range(num):
+		row = []
+		for xyz in openfile.readline().split(','):
+			row.append(float(xyz.strip()))
+		cloud.append(row)
+	return cloud
 
 def readCalreadings(txt):
 	import numpy as np
-	ptcloud_d = []
-	ptcloud_a = []
-	ptcloud_c = []
 	ptcloud_frame = []
 
 	calreadings = open(txt, 'r')
@@ -60,14 +72,10 @@ def readCalreadings(txt):
 	N_frames = int(header[3])
 	calreadings_fn = header[4]
 
-
 	for j in range(N_frames):
-		for i in range(N_D):
-			ptcloud_d.append(float(calreadings.readline().split(',')[0].strip()))
-		for i in range(N_A):
-			ptcloud_a.append(float(calreadings.readline().split(',')[1].strip()))
-		for i in range(N_C):
-			ptcloud_c.append(float(calreadings.readline().split(',')[2].strip()))
+		ptcloud_d = readCloud(calreadings, N_D)
+		ptcloud_a = readCloud(calreadings, N_A)
+		ptcloud_c = readCloud(calreadings, N_C)
 		ptcloud_frame.append([ptcloud_d, ptcloud_a, ptcloud_c])
 
 	return ptcloud_frame
