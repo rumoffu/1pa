@@ -67,17 +67,23 @@ def findDisplacement(clouda, cloudb):
 	return getMidpoint(cloudb) - getMidpoint(clouda)
 	
 def getMidpoint(cloud):
+	import numpy as np
+	from numpy import matrix
+	
 	xyz = []
 	xsum = 0
 	ysum = 0
 	zsum = 0
-	for i in len(cloud):
-		xsum += cloud[i][0]
-		ysum += cloud[i][1]
-		zsum += cloud[i][2]
+	#print cloud[0,0]
+	for i in range(len(cloud)):
+		xsum += cloud[i, 0]
+		ysum += cloud[i, 1]
+		zsum += cloud[i, 2]
 	
 	size = len(cloud)
-	xyz.append(xsum/size, ysum/size, zsum/size)
+	xyz.append(xsum/size)
+	xyz.append(ysum/size)
+	xyz.append(zsum/size)
 	return matrix(xyz)
 
 def readCalbody(txt):
@@ -94,15 +100,21 @@ def readCalbody(txt):
 	return ptcloud_d, ptcloud_a, ptcloud_c
 
 def readCloud(openfile, num):
+	import numpy as np
+	from numpy import matrix
 	cloud = []
 	for i in range(num):
 		row = []
 		for xyz in openfile.readline().split(','):
 			row.append(float(xyz.strip()))
 		cloud.append(row)
+	#print"cloud \n%s" % cloud
+	#print "matrix \n %s" % matrix(cloud)
 	return matrix(cloud)
 
 def readCalreadings(txt):
+	import numpy as np
+	from numpy import matrix	
 	ptcloud_frame = []
 
 	calreadings = open(txt, 'r')
