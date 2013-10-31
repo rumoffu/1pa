@@ -19,10 +19,8 @@ def main():
 	#open data set
 	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody("../input_data/pa1-debug-a-calbody.txt")
 	ptcloud_frame = readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
-	gframe = readEmpivot("../input_data/pa1-debug-a-empivot.txt")
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " cloudframe: \n%s\n" % ptcloud_frame
-	print " gframe: \n%s\n" % gframe
 	frameAns = []
 	c_expected = []
 	for i in range(len(ptcloud_frame)):
@@ -46,11 +44,39 @@ def main():
 	nice_c_expected = getFormat(c_expected)
 	diff = nice_c_expected - np.vstack(frameAns)
 	##printOutput(c_expected)
-	print nice_c_expected
+	##print nice_c_expected
 	##print diff
 
 	#Problem 5
 	
+	gframe = readEmpivot("../input_data/pa1-debug-a-empivot.txt")
+	##print " gframe: \n%s\n" % gframe
+	gfirst = gframe[0]
+	#print gfirst
+	gbar = getMidpoint(gfirst)
+
+	ptcloud_g = gfirst - gbar
+	gframes = []
+	for i in range(len(gframe)):
+		gframes.append(solveFrame(ptcloud_g, gframe[i]))
+	disps = [] #displacements
+	rotas = [] #rotations
+	idens = [] #identities
+	negid = -1*np.identity(3)
+	for pi in gframes: #12 frames
+		disps.append(1*pi.displacement)
+		rotas.append(pi.rotation)
+		idens.append(negid)
+	p = np.vstack(disps)
+	rs = np.vstack(rotas)
+	ids = np.vstack(idens)
+	A = np.hstack([rs,ids])
+
+	print p
+	print A
+	ptip_dimple = ((A.T*A).I)*A.T*p
+	#ptip_dimple = A.I*p
+	print ptip_dimple
 
 class Frame:
 	def __init__(self, rotation, displacement):
@@ -224,7 +250,8 @@ def readEmpivot(txt):
 		ptcloud_g = readCloud(empivot, N_G)
 		ptcloud_frame.append(ptcloud_g)
 
-	return np.vstack(ptcloud_frame)
+	#return np.vstack(ptcloud_frame)
+	return ptcloud_frame
 
 def readCloud(openfile, num):
 	import numpy as np
