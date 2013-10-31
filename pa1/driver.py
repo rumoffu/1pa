@@ -58,7 +58,14 @@ def main():
 
 	#Problem 6
 	optframe = readOptpivot("../input_data/pa1-debug-a-optpivot.txt")
-	OPT_position = pivotCalibration(optframe)
+	hframe = []
+	#print len(optframe) #12
+	for i in range(len(optframe)):
+		hframe.append(optframe[i][1])
+	print hframe
+	OPT_position = pivotCalibration(hframe)
+
+	print OPT_position
 
 class Frame:
 	def __init__(self, rotation, displacement):
