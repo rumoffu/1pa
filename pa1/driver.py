@@ -53,38 +53,12 @@ def main():
 	#Problem 5
 	
 	gframe = readEmpivot("../input_data/pa1-debug-a-empivot.txt")
-	##print " gframe: \n%s\n" % gframe
-	gfirst = gframe[0]
-	#print gfirst #6 coordinates with xyz each
-	gbar = getMidpoint(gfirst)
-	#print gbar # one with xyz
-	ptcloud_g = gfirst - gbar
-	#print ptcloud_g #6 xyz positions
-	gframes = []
-	#print len(gframe) #12
-	for i in range(len(gframe)):
-		gframes.append(solveFrame(ptcloud_g, gframe[i]))
-	disps = [] #displacements
-	rotas = [] #rotations
-	idens = [] #identities
-	negid = -1*np.identity(3)
-	for pi in gframes: #12 frames
-		disps.append(-1*pi.displacement)
-		rotas.append(pi.rotation)
-		idens.append(negid)
-	p = np.vstack(disps)
-	rs = np.vstack(rotas)
-	ids = np.vstack(idens)
-	A = np.hstack([rs,ids])
-
-	#ptip_dimple = ((A.T*A).I)*A.T*p
-	ptip_dimple = A.I*p
-	#print ptip_dimple
+	
+	EM_position = pivotCalibration(gframe)
 
 	#Problem 6
 	optframe = readOptpivot("../input_data/pa1-debug-a-optpivot.txt")
-	print optframe
-
+	OPT_position = pivotCalibration(optframe)
 
 class Frame:
 	def __init__(self, rotation, displacement):
@@ -100,6 +74,37 @@ class Frame:
 		rot = self.rotation.I #matrix inverse
 		displace = -1*rot*self.displacement
 		return Frame(rot, displace)
+
+def pivotCalibration(frames):
+
+	##print " frames: \n%s\n" % frames
+	gfirst = frames[0]
+	#print gfirst #6 coordinates with xyz each
+	gbar = getMidpoint(gfirst)
+	#print gbar # one with xyz
+	ptcloud_g = gfirst - gbar
+	#print ptcloud_g #6 xyz positions
+	gframes = []
+	#print len(frames) #12
+	for i in range(len(frames)):
+		gframes.append(solveFrame(ptcloud_g, frames[i]))
+	disps = [] #displacements
+	rotas = [] #rotations
+	idens = [] #identities
+	negid = -1*np.identity(3)
+	for pi in gframes: #12 frames
+		disps.append(-1*pi.displacement)
+		rotas.append(pi.rotation)
+		idens.append(negid)
+	p = np.vstack(disps)
+	rs = np.vstack(rotas)
+	ids = np.vstack(idens)
+	A = np.hstack([rs,ids])
+
+	#ptip_dimple = ((A.T*A).I)*A.T*p
+	ptip_dimple = A.I*p
+	##print ptip_dimple
+	return ptip_dimple
 
 
 def transform(R, p, x):
