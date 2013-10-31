@@ -52,10 +52,11 @@ class Frame:
 
 
 def solveFrame(a, b):
-	displacement = findDisplacement(a, b)
-	bnorm = b - displacement
+	#displacement = findDisplacement(a, b)
+	anorm = a - getMidpoint(a)
+	bnorm = b - getMidpoint(b)
 
-	H(a, bnorm)	
+	H(anorm, bnorm)	
 	return Frame(rot, displace)
 
 def findDisplacement(clouda, cloudb):
