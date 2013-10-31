@@ -64,7 +64,7 @@ def main():
 	idens = [] #identities
 	negid = -1*np.identity(3)
 	for pi in gframes: #12 frames
-		disps.append(1*pi.displacement)
+		disps.append(-1*pi.displacement)
 		rotas.append(pi.rotation)
 		idens.append(negid)
 	p = np.vstack(disps)
@@ -72,10 +72,10 @@ def main():
 	ids = np.vstack(idens)
 	A = np.hstack([rs,ids])
 
-	print p
-	print A
-	ptip_dimple = ((A.T*A).I)*A.T*p
-	#ptip_dimple = A.I*p
+	print rs
+	#print A
+	#ptip_dimple = ((A.T*A).I)*A.T*p
+	ptip_dimple = A.I*p
 	print ptip_dimple
 
 class Frame:
