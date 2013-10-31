@@ -23,6 +23,7 @@ def main():
 	##print " cloudframe: \n%s\n" % ptcloud_frame
 	frameAns = []
 	c_expected = []
+	#print len(ptcloud_frame) #8 times
 	for i in range(len(ptcloud_frame)):
 		#Problem 4a
 		#print ptcloud_frame[0, i]
@@ -54,15 +55,15 @@ def main():
 	gframe = readEmpivot("../input_data/pa1-debug-a-empivot.txt")
 	##print " gframe: \n%s\n" % gframe
 	gfirst = gframe[0]
-	#print gfirst
+	#print gfirst #6 coordinates with xyz each
 	gbar = getMidpoint(gfirst)
-
+	#print gbar # one with xyz
 	ptcloud_g = gfirst - gbar
-	###print ptcloud_g 
+	#print ptcloud_g #6 xyz positions
 	gframes = []
+	#print len(gframe) #12
 	for i in range(len(gframe)):
 		gframes.append(solveFrame(ptcloud_g, gframe[i]))
-		#print gframe[i]
 	disps = [] #displacements
 	rotas = [] #rotations
 	idens = [] #identities
@@ -76,11 +77,14 @@ def main():
 	ids = np.vstack(idens)
 	A = np.hstack([rs,ids])
 
-	#print rotas
-	#print A
 	#ptip_dimple = ((A.T*A).I)*A.T*p
 	ptip_dimple = A.I*p
-	print ptip_dimple
+	#print ptip_dimple
+
+	#Problem 6
+	optframe = readOptpivot("../input_data/pa1-debug-a-optpivot.txt")
+	print optframe
+
 
 class Frame:
 	def __init__(self, rotation, displacement):
@@ -196,7 +200,7 @@ def H(a, b):
 	from numpy import matrix
 
 	H = np.zeros(shape=(3,3))
-	print len(a) #16 8's and then 12 6's but should be 24 6's from matlab... KTW
+	#print len(a) #16 8's and then 12 6's but should be 24 6's from matlab... KTW
 	for i in range(len(a)):
 		summand = np.zeros(shape=(3,3))
 		ai = a[i]
@@ -205,7 +209,7 @@ def H(a, b):
 			for k in range(3):
 				summand[j, k] = ai[0, j] * bi[0, k]
 		H = H + summand
-	print H
+	##print H
 	return H
 
 def G(h):
@@ -257,15 +261,17 @@ def readEmpivot(txt):
 	empivot = open(txt, 'r')
 	header = empivot.readline().split(',')
 	N_G = int(header[0].strip())
+	#print N_G #6
 	N_frames = int(header[1].strip())
 	empivot_fn = header[2]
 	ptcloud_frame = []
-
+	#print N_frames #12
 	for j in range(N_frames):
 		ptcloud_g = readCloud(empivot, N_G)
 		ptcloud_frame.append(ptcloud_g)
 
 	#return np.vstack(ptcloud_frame)
+	#print ptcloud_frame #12 matrices with 6 points each
 	return ptcloud_frame
 
 def readCloud(openfile, num):
@@ -300,6 +306,26 @@ def readCalreadings(txt):
 		ptcloud_frame.append([ptcloud_d, ptcloud_a, ptcloud_c])
 
 	return matrix(ptcloud_frame)
+
+def readOptpivot(txt):
+	import numpy as np
+	from numpy import matrix	
+	ptcloud_frame = []
+
+	optpivot = open(txt, 'r')
+	header = optpivot.readline().split(',')
+	N_D = int(header[0])
+	N_H = int(header[1])
+	N_frames = int(header[2])
+	optpivot_fn = header[3]
+
+	for j in range(N_frames):
+		ptcloud_d = readCloud(optpivot, N_D)
+		ptcloud_h = readCloud(optpivot, N_H)
+		ptcloud_frame.append([ptcloud_d, ptcloud_h])
+
+	return ptcloud_frame
+
 
 if __name__ == '__main__':
     main()
