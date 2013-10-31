@@ -31,21 +31,18 @@ def main():
 		#Problem 4b
 		frame_a = solveFrame(ptcloud_a, ptcloud_frame[i, 1]) #frame is ptclouds d, a, c
 		#Problem 4c
-		frame_c = frame_d.inverse().dot(frame_a)
+		###frame_c = frame_d.inverse().dot(frame_a)
 
-		ci_expected = frame_c.rotation*ptcloud_c.T + frame_c.displacement
+		###ci_expected = frame_c.rotation*ptcloud_c.T + frame_c.displacement
+		ci_a = frame_a.rotation*ptcloud_c.T + frame_a.displacement
+		frame_di = frame_d.inverse()
+		ci_expected = frame_di.rotation*ci_a + frame_di.displacement
 		c_expected.append(ci_expected)
-	
-	# 8 c expected's
-	for c in c_expected:
-		##print c.shape
-		numrow, numcol = c.shape
-		# 27 frames for each c
-		for row in range(numcol):
-			# 3 times
-			for col in range(numrow):
-				sys.stdout.write(str(c[col, row]) + ',\t')
-			sys.stdout.write('\n')
+		#print ptcloud_frame[i, 2]
+	#print c_expected
+	getFormat(c_expected)
+	##printOutput(c_expected)
+	#printOutput(c_expected
 	#Problem 5
 	
 
@@ -64,6 +61,42 @@ class Frame:
 		displace = -1*rot*self.displacement
 		return Frame(rot, displace)
 
+def printOutput(c_expected):
+	import sys
+	# 8 c expected's
+	for c in c_expected:
+		##print c.shape
+		numrow, numcol = c.shape
+		# 27 frames for each c
+		for row in range(numcol):
+			# 3 times
+			for col in range(numrow):
+				sys.stdout.write(str(c[col, row]) + ',\t')
+			sys.stdout.write('\n')
+	
+
+def getFormat(c_expected):
+	import numpy as np
+	from numpy import matrix
+
+	bigset = []
+	# 8 c expected's
+	for c in c_expected:
+		##print c.shape
+		numrow, numcol = c.shape
+		# 27 frames for each c
+		acloud = []
+		for row in range(numcol):
+			# 3 times
+			arow = []
+			for col in range(numrow):
+				arow.append(c[col, row])
+			#aset.append(arow)
+			acloud.append(arow)
+		bigset.append(acloud)
+	
+	final = np.vstack(bigset)
+	print final
 
 def solveFrame(a, b):
 	from numpy import linalg as LA
