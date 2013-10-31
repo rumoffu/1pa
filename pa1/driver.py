@@ -14,11 +14,20 @@ def main():
 	and do a point cloud to point cloud registration
 	"""
 	import sys
+	prefix = "pa1-debug-g"
+	calbody_fn = "../input_data/" + prefix + "-calbody.txt"
+	calreadings_fn = "../input_data/" + prefix + "-calreadings.txt"
+	empivot_fn = "../input_data/" + prefix + "-empivot.txt"
+	optpivot_fn = "../input_data/" + prefix + "-optpivot.txt"
+	output_fn = "output/" + prefix + "-output.txt"
+	aux_fn = "output/" + prefix + "-auxiliary.txt"
 
 	#Problem 4
 	#open data set
-	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody("../input_data/pa1-debug-a-calbody.txt")
-	ptcloud_frame = readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
+	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody(calbody_fn)
+	N_C = len(ptcloud_c)
+	ptcloud_frame = readCalreadings(calreadings_fn)
+	N_frames = len(ptcloud_frame)
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " cloudframe: \n%s\n" % ptcloud_frame
 	frameAns = []
@@ -52,20 +61,34 @@ def main():
 
 	#Problem 5
 	
-	gframe = readEmpivot("../input_data/pa1-debug-a-empivot.txt")
+	gframe = readEmpivot(empivot_fn)
 	
-	EM_position = pivotCalibration(gframe)
-
+	preEM_position = pivotCalibration(gframe)
+	EM_position = preEM_position[3:6]
 	#Problem 6
-	optframe = readOptpivot("../input_data/pa1-debug-a-optpivot.txt")
+	optframe = readOptpivot(optpivot_fn)
 	hframe = []
 	#print len(optframe) #12
 	for i in range(len(optframe)):
 		hframe.append(optframe[i][1])
-	print hframe
-	OPT_position = pivotCalibration(hframe)
+	#print hframe
+	preOPT_position = pivotCalibration(hframe)
+	#print preOPT_position[3:6]
+	OPT_position = transform(frame_di.rotation, frame_di.displacement, preOPT_position[3:6])
+	
+	#print EM_position
+	#print OPT_position
+	output = open(output_fn, 'w')
+	output.write(str(N_C) + ", " + str(N_frames) + ", " + output_fn[7:] +"\n")
+	output.write(str(EM_position[0, 0]) + ",\t" + str(EM_position[1, 0]) + ",\t" + str(EM_position[2, 0]) + "\n") 
+	output.write(str(OPT_position[0, 0]) + ",\t" + str(OPT_position[1, 0]) + ",\t" + str(OPT_position[2, 0]) + "\n")
+	printOutput(c_expected, output)
+	output.close()
 
-	print OPT_position
+	aux = open(aux_fn, 'w')
+	aux.write("Differences in C_i and C_i expected\n")
+	aux.write(str(diff))
+	aux.close()
 
 class Frame:
 	def __init__(self, rotation, displacement):
@@ -117,8 +140,7 @@ def pivotCalibration(frames):
 def transform(R, p, x):
 	return R*x + p
 
-def printOutput(c_expected):
-	import sys
+def printOutput(c_expected, outfile):
 	# 8 c expected's
 	for c in c_expected:
 		##print c.shape
@@ -126,9 +148,11 @@ def printOutput(c_expected):
 		# 27 frames for each c
 		for row in range(numcol):
 			# 3 times
+			outstring = ''
 			for col in range(numrow):
-				sys.stdout.write(str(c[col, row]) + ',\t')
-			sys.stdout.write('\n')
+				outstring += str(c[col, row]) + ',\t'
+			outfile.write(outstring[:-2])
+			outfile.write('\n')
 	
 
 def getFormat(c_expected):
@@ -156,6 +180,7 @@ def getFormat(c_expected):
 
 def solveFrame(a, b):
 	from numpy import linalg as LA
+	#from scipy import linalg as LA
 	abar = getMidpoint(a)
 	bbar = getMidpoint(b)
 
@@ -179,11 +204,18 @@ def solveFrame(a, b):
 		if eigvals[i] == maxval:
 			maxi = i
 	maxvect = eigvects[maxi]	
-	
+	#print maxi
+	#print eigvals
+	#print maxval
+	#print maxvect	
+	#print eigvects
+
 	R = getR(maxvect)
 	##print abar
 	##print bbar
 	displace = bbar.T - R*abar.T
+	##print displace
+	##print R
 	##print displace
 	return Frame(R, displace)
 
