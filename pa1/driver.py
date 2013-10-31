@@ -27,8 +27,10 @@ def main():
 		#Problem 4a
 		#print ptcloud_frame[0, i]
 		frame_d = solveFrame(ptcloud_d, ptcloud_frame[i, 0]) #frame is ptclouds d, a, c
+
 		#Problem 4b
 		frame_a = solveFrame(ptcloud_a, ptcloud_frame[i, 1]) #frame is ptclouds d, a, c
+
 		#Problem 4c
 		###frame_c = frame_d.inverse().dot(frame_a)
 
@@ -56,9 +58,11 @@ def main():
 	gbar = getMidpoint(gfirst)
 
 	ptcloud_g = gfirst - gbar
+	###print ptcloud_g 
 	gframes = []
 	for i in range(len(gframe)):
 		gframes.append(solveFrame(ptcloud_g, gframe[i]))
+		#print gframe[i]
 	disps = [] #displacements
 	rotas = [] #rotations
 	idens = [] #identities
@@ -72,7 +76,7 @@ def main():
 	ids = np.vstack(idens)
 	A = np.hstack([rs,ids])
 
-	print rs
+	#print rotas
 	#print A
 	#ptip_dimple = ((A.T*A).I)*A.T*p
 	ptip_dimple = A.I*p
@@ -142,8 +146,17 @@ def solveFrame(a, b):
 	anorm = a - abar
 	bnorm = b - bbar
 	matrixH = H(anorm, bnorm)	
+	'''
+	displace = findDisplacement(a,b).T
+	print displace
+	bnorm = b.T - displace
+	print
+	print bnorm
+	matrixH = H(a, bnorm)
+	'''
 
 	matrixG = G(matrixH)
+	#print matrixG
 	eigvals, eigvects = LA.eig(matrixG)
 	for i in range(len(eigvals)):
 		maxval = max(eigvals)
@@ -183,6 +196,7 @@ def H(a, b):
 	from numpy import matrix
 
 	H = np.zeros(shape=(3,3))
+	print len(a) #16 8's and then 12 6's but should be 24 6's from matlab... KTW
 	for i in range(len(a)):
 		summand = np.zeros(shape=(3,3))
 		ai = a[i]
@@ -191,7 +205,7 @@ def H(a, b):
 			for k in range(3):
 				summand[j, k] = ai[0, j] * bi[0, k]
 		H = H + summand
-	##print H
+	print H
 	return H
 
 def G(h):
