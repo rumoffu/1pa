@@ -82,13 +82,15 @@ def getMidpoint(cloud):
 def H(a, b):
 	import numpy as np
 	from numpy import matrix
-	H = np.empty(shape=(3,3))
+
+	H = np.zeros(shape=(3,3))
 	for i in range(len(a)):
-		summand = np.empty(shape=(3,3))
+		summand = np.zeros(shape=(3,3))
+		ai = a[i]
+		bi = b[i]
 		for j in range(3):
 			for k in range(3):
-				print b
-				summand[j, k] = a[j, 0] * b[k, 0]
+				summand[j, k] = ai[0, j] * bi[0, k]
 		H = H + summand
 	print H
 	return H
