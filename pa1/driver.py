@@ -14,7 +14,7 @@ def main():
 	and do a point cloud to point cloud registration
 	"""
 	import sys
-	prefix = "pa1-debug-g"
+	prefix = "pa1-unknown-i"
 	calbody_fn = "../input_data/" + prefix + "-calbody.txt"
 	calreadings_fn = "../input_data/" + prefix + "-calreadings.txt"
 	empivot_fn = "../input_data/" + prefix + "-empivot.txt"
@@ -87,6 +87,16 @@ def main():
 
 	aux = open(aux_fn, 'w')
 	aux.write("Differences in C_i and C_i expected\n")
+	avgx = 0
+	avgy = 0
+	avgz = 0
+	ndiff = len(diff)
+	for i in range(ndiff):
+		avgx += diff[i, 0]
+		avgy += diff[i, 1]
+		avgz += diff[i, 2]
+	string = "average differences - x: %s \ty: %s \tz: %s\n" % (avgx/ndiff, avgy/ndiff, avgz/ndiff)
+	aux.write(string)
 	aux.write(str(diff))
 	aux.close()
 
