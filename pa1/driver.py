@@ -14,28 +14,36 @@ def main():
 	and do a point cloud to point cloud registration
 	"""
 
+	#Problem 4
 	#open data set
-	#ptcloud_d = []
-	#ptcloud_a = []
-	#ptcloud_c = []
 	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody("../input_data/pa1-debug-a-calbody.txt")
 	ptcloud_frame = readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
 
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
 
+
 	c_expected = []
 	for i in range(len(ptcloud_frame)):
+		#Problem 4a
+		#print ptcloud_frame[0, i]
 		frame_d = solveFrame(ptcloud_d, ptcloud_frame[i, 0]) #frame is ptclouds d, a, c
+		#Problem 4b
 		frame_a = solveFrame(ptcloud_a, ptcloud_frame[i, 1]) #frame is ptclouds d, a, c
+		#Problem 4c
 		frame_c = frame_d.inverse().dot(frame_a)
-		c_expected.append(frame_c.rotation*ptcloud_c.T + frame_c.displacement)
-'''		frame_d = solveFrame(ptcloud_d, cloudframe)
-		frame_a = 
-			Frame F_C = (F_D.inverse()).dot(F_A);
-			PointCloud C = F_C.dot(c);
-			Cs[i] = C;
-'''	
+		#print frame_c.rotation
+		#print ptcloud_c
+		#print ""
+		#print ptcloud_c[i].T
+		c_expected.append(frame_c.rotation*ptcloud_c[i].T + frame_c.displacement)
+
+	for c in c_expected:
+		#continue
+		print c
+	#Problem 5
+	
+
 class Frame:
 	def __init__(self, rotation, displacement):
 		self.rotation = rotation #matrix
@@ -54,7 +62,6 @@ class Frame:
 
 def solveFrame(a, b):
 	from numpy import linalg as LA
-	#displacement = findDisplacement(a, b)
 	abar = getMidpoint(a)
 	bbar = getMidpoint(b)
 	anorm = a - abar
@@ -87,7 +94,6 @@ def getMidpoint(cloud):
 	xsum = 0
 	ysum = 0
 	zsum = 0
-	#print cloud[0,0]
 	for i in range(len(cloud)):
 		xsum += cloud[i, 0]
 		ysum += cloud[i, 1]
@@ -164,8 +170,6 @@ def readCloud(openfile, num):
 		for xyz in openfile.readline().split(','):
 			row.append(float(xyz.strip()))
 		cloud.append(row)
-	#print"cloud \n%s" % cloud
-	#print "matrix \n %s" % matrix(cloud)
 	return matrix(cloud)
 
 def readCalreadings(txt):
@@ -189,15 +193,5 @@ def readCalreadings(txt):
 
 	return matrix(ptcloud_frame)
 
-	'''
-		fdata = np.genfromtxt('sortedfred.csv', delimiter=',', skip_header=1,
-		                     skip_footer=0, names=['id', 'min'])
-		
-		ddata = np.genfromtxt('sorteddock.csv', delimiter=',', skip_header=1,
-		                     skip_footer=0, names=['id', 'min'])
-		
-		ax1.scatter(fdata['min'],ddata['min'],label='dock6', color='blue')
-	'''
-		
 if __name__ == '__main__':
     main()
