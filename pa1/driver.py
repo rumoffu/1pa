@@ -4,9 +4,6 @@
 This is a driver program to run a Point Cloud to Point Cloud Registration
 and a Pivot Calibration.
 """
-#import matplotlib.pyplot as plt  
-import numpy as np 
-
 
 def main():
 	"""
