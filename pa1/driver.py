@@ -19,9 +19,10 @@ def main():
 	#open data set
 	ptcloud_d, ptcloud_a, ptcloud_c = readCalbody("../input_data/pa1-debug-a-calbody.txt")
 	ptcloud_frame = readCalreadings("../input_data/pa1-debug-a-calreadings.txt")
-
+	gframe = readEmpivot("../input_data/pa1-debug-a-empivot.txt")
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
-	##print " frame: \n%s\n" % ptcloud_frame
+	##print " cloudframe: \n%s\n" % ptcloud_frame
+	print " gframe: \n%s\n" % gframe
 	frameAns = []
 	c_expected = []
 	for i in range(len(ptcloud_frame)):
@@ -34,16 +35,18 @@ def main():
 		###frame_c = frame_d.inverse().dot(frame_a)
 
 		###ci_expected = frame_c.rotation*ptcloud_c.T + frame_c.displacement
-		ci_a = frame_a.rotation*ptcloud_c.T + frame_a.displacement
+		ci_a = transform(frame_a.rotation, frame_a.displacement, ptcloud_c.T)
+		#ci_a = frame_a.rotation*ptcloud_c.T + frame_a.displacement
 		frame_di = frame_d.inverse()
-		ci_expected = frame_di.rotation*ci_a + frame_di.displacement
+		ci_expected = transform(frame_di.rotation, frame_di.displacement, ci_a)
+		#ci_expected = frame_di.rotation*ci_a + frame_di.displacement
 		c_expected.append(ci_expected)
 		frameAns.append(ptcloud_frame[i, 2])
 	#print c_expected
 	nice_c_expected = getFormat(c_expected)
 	diff = nice_c_expected - np.vstack(frameAns)
 	##printOutput(c_expected)
-	##print nice_c_expected
+	print nice_c_expected
 	##print diff
 
 	#Problem 5
@@ -63,6 +66,10 @@ class Frame:
 		rot = self.rotation.I #matrix inverse
 		displace = -1*rot*self.displacement
 		return Frame(rot, displace)
+
+
+def transform(R, p, x):
+	return R*x + p
 
 def printOutput(c_expected):
 	import sys
@@ -202,9 +209,27 @@ def readCalbody(txt):
 	ptcloud_c = readCloud(calbody, N_C)
 	return ptcloud_d, ptcloud_a, ptcloud_c
 
+def readEmpivot(txt):
+	import numpy as np
+	from numpy import matrix
+
+	empivot = open(txt, 'r')
+	header = empivot.readline().split(',')
+	N_G = int(header[0].strip())
+	N_frames = int(header[1].strip())
+	empivot_fn = header[2]
+	ptcloud_frame = []
+
+	for j in range(N_frames):
+		ptcloud_g = readCloud(empivot, N_G)
+		ptcloud_frame.append(ptcloud_g)
+
+	return np.vstack(ptcloud_frame)
+
 def readCloud(openfile, num):
 	import numpy as np
 	from numpy import matrix
+
 	cloud = []
 	for i in range(num):
 		row = []
