@@ -13,6 +13,7 @@ def main():
 	Program to open a data set
 	and do a point cloud to point cloud registration
 	"""
+	import sys
 
 	#Problem 4
 	#open data set
@@ -21,7 +22,6 @@ def main():
 
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
-
 
 	c_expected = []
 	for i in range(len(ptcloud_frame)):
@@ -32,15 +32,21 @@ def main():
 		frame_a = solveFrame(ptcloud_a, ptcloud_frame[i, 1]) #frame is ptclouds d, a, c
 		#Problem 4c
 		frame_c = frame_d.inverse().dot(frame_a)
-		#print frame_c.rotation
-		#print ptcloud_c
-		#print ""
-		#print ptcloud_c[i].T
-		c_expected.append(frame_c.rotation*ptcloud_c[i].T + frame_c.displacement)
 
+		ci_expected = frame_c.rotation*ptcloud_c.T + frame_c.displacement
+		c_expected.append(ci_expected)
+	
+	# 8 c expected's
 	for c in c_expected:
-		#continue
-		print c
+		##print c.shape
+		numrow, numcol = c.shape
+		# 27 frames for each c
+		for row in range(numcol):
+			# 3 times
+			for col in range(numrow):
+				sys.stdout.write(str(c[col, row]) + ', ')
+			sys.stdout.write('\n')
+		sys.stdout.write('\n')
 	#Problem 5
 	
 
