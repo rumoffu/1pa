@@ -59,7 +59,6 @@ def solveFrame(a, b):
 	return Frame(rot, displace)
 
 def findDisplacement(clouda, cloudb):
-	print getMidpoint(cloudb)
 	return getMidpoint(cloudb) - getMidpoint(clouda)
 	
 def getMidpoint(cloud):
@@ -83,6 +82,17 @@ def getMidpoint(cloud):
 def H(a, b):
 	import numpy as np
 	from numpy import matrix
+	H = np.empty(shape=(3,3))
+	for i in range(len(a)):
+		summand = np.empty(shape=(3,3))
+		for j in range(3):
+			for k in range(3):
+				print b
+				summand[j, k] = a[j, 0] * b[k, 0]
+		H = H + summand
+	print H
+	return H
+
 
 def readCalbody(txt):
 	calbody = open(txt, 'r')
