@@ -138,10 +138,11 @@ def solveFrame(a, b):
 	from numpy import linalg as LA
 	abar = getMidpoint(a)
 	bbar = getMidpoint(b)
+
 	anorm = a - abar
 	bnorm = b - bbar
-
 	matrixH = H(anorm, bnorm)	
+
 	matrixG = G(matrixH)
 	eigvals, eigvects = LA.eig(matrixG)
 	for i in range(len(eigvals)):
