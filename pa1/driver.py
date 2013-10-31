@@ -54,8 +54,10 @@ class Frame:
 def solveFrame(a, b):
 	from numpy import linalg as LA
 	#displacement = findDisplacement(a, b)
-	anorm = a - getMidpoint(a)
-	bnorm = b - getMidpoint(b)
+	abar = getMidpoint(a)
+	bbar = getMidpoint(b)
+	anorm = a - abar
+	bnorm = b - bbar
 
 	matrixH = H(anorm, bnorm)	
 	matrixG = G(matrixH)
@@ -67,13 +69,10 @@ def solveFrame(a, b):
 	maxvect = eigvects[maxi]	
 	
 	R = getR(maxvect)
-	print anorm
-	displace = bnorm - R*anorm
-	print displace
-	##print maxi
-	##print eigvals
-	##print eigvects
-	##print maxvect
+	##print abar
+	##print bbar
+	displace = bbar.T - R*abar.T
+	##print displace
 	return Frame(R, displace)
 
 def findDisplacement(clouda, cloudb):
@@ -138,7 +137,7 @@ def getR(maxeigvect):
 	row2 = np.hstack([ [2*(q1*q2 + q0*q3) ],		[q0*q0 - q1*q1 + q2*q2 - q3*q3],[2*(q2*q3 - q0*q1)] 		])
 	row3 = np.hstack([ [2*(q1*q3 - q0*q2) ],		[2*(q2*q3 + q0*q1)],		[q0*q0 - q1*q1 - q2*q2 + q3*q3] ])
 	R = np.vstack([row1, row2, row3])
-	print R
+	##print R
 	return R
 
 
