@@ -52,13 +52,29 @@ class Frame:
 
 
 def solveFrame(a, b):
+	from numpy import linalg as LA
 	#displacement = findDisplacement(a, b)
 	anorm = a - getMidpoint(a)
 	bnorm = b - getMidpoint(b)
 
 	matrixH = H(anorm, bnorm)	
 	matrixG = G(matrixH)
-	return Frame(rot, displace)
+	eigvals, eigvects = LA.eig(matrixG)
+	for i in range(len(eigvals)):
+		maxval = max(eigvals)
+		if eigvals[i] == maxval:
+			maxi = i
+	maxvect = eigvects[maxi]	
+	
+	R = getR(maxvect)
+	print anorm
+	displace = bnorm - R*anorm
+	print displace
+	##print maxi
+	##print eigvals
+	##print eigvects
+	##print maxvect
+	return Frame(R, displace)
 
 def findDisplacement(clouda, cloudb):
 	return getMidpoint(cloudb) - getMidpoint(clouda)
@@ -94,7 +110,7 @@ def H(a, b):
 			for k in range(3):
 				summand[j, k] = ai[0, j] * bi[0, k]
 		H = H + summand
-	print H
+	##print H
 	return H
 
 def G(h):
@@ -102,17 +118,29 @@ def G(h):
 	from numpy import matrix
 	identity = np.identity(3)
 	trace = np.trace(h)
-	delta = matrix([ h[1,2]-h[2,1], h[2,0] - h[0,2], h[0,1]-h[1,0] ])
+	delta = matrix([ h[1,2]-h[2,1], h[2,0] - h[0,2], h[0,1]-h[1,0] ]).T
 	bot = h + h.T - trace*identity
-
-	row1 = np.hstack([matrix(trace), delta])
-	print row1
-	botrows = np.hstack([delta.T, bot])
-	print botrows
+	row1 = np.hstack([matrix(trace), delta.T])
+	botrows = np.hstack([delta, bot])
 	G = np.vstack([row1, botrows])
-	print G
+	##print G
 	return G
 	
+def getR(maxeigvect):
+	import numpy as np
+	from numpy import matrix
+	q0 = maxeigvect[0, 0]
+	q1 = maxeigvect[0, 1]
+	q2 = maxeigvect[0, 2]
+	q3 = maxeigvect[0, 3]
+
+	row1 = np.hstack([ [q0*q0 + q1*q1 - q2*q2 - q3*q3],	[2*(q1*q2 - q0*q3)], 		[2*(q1*q3 + q0*q2)] 		])
+	row2 = np.hstack([ [2*(q1*q2 + q0*q3) ],		[q0*q0 - q1*q1 + q2*q2 - q3*q3],[2*(q2*q3 - q0*q1)] 		])
+	row3 = np.hstack([ [2*(q1*q3 - q0*q2) ],		[2*(q2*q3 + q0*q1)],		[q0*q0 - q1*q1 - q2*q2 + q3*q3] ])
+	R = np.vstack([row1, row2, row3])
+	print R
+	return R
+
 
 def readCalbody(txt):
 	calbody = open(txt, 'r')
