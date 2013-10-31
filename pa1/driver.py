@@ -22,7 +22,7 @@ def main():
 
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
-
+	frameAns = []
 	c_expected = []
 	for i in range(len(ptcloud_frame)):
 		#Problem 4a
@@ -38,11 +38,14 @@ def main():
 		frame_di = frame_d.inverse()
 		ci_expected = frame_di.rotation*ci_a + frame_di.displacement
 		c_expected.append(ci_expected)
-		#print ptcloud_frame[i, 2]
+		frameAns.append(ptcloud_frame[i, 2])
 	#print c_expected
-	getFormat(c_expected)
+	nice_c_expected = getFormat(c_expected)
+	diff = nice_c_expected - np.vstack(frameAns)
 	##printOutput(c_expected)
-	#printOutput(c_expected
+	##print nice_c_expected
+	##print diff
+
 	#Problem 5
 	
 
