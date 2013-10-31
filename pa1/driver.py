@@ -56,7 +56,8 @@ def solveFrame(a, b):
 	anorm = a - getMidpoint(a)
 	bnorm = b - getMidpoint(b)
 
-	H(anorm, bnorm)	
+	matrixH = H(anorm, bnorm)	
+	matrixG = G(matrixH)
 	return Frame(rot, displace)
 
 def findDisplacement(clouda, cloudb):
@@ -96,6 +97,22 @@ def H(a, b):
 	print H
 	return H
 
+def G(h):
+	import numpy as np
+	from numpy import matrix
+	identity = np.identity(3)
+	trace = np.trace(h)
+	delta = matrix([ h[1,2]-h[2,1], h[2,0] - h[0,2], h[0,1]-h[1,0] ])
+	bot = h + h.T - trace*identity
+
+	row1 = np.hstack([matrix(trace), delta])
+	print row1
+	botrows = np.hstack([delta.T, bot])
+	print botrows
+	G = np.vstack([row1, botrows])
+	print G
+	return G
+	
 
 def readCalbody(txt):
 	calbody = open(txt, 'r')
