@@ -44,9 +44,8 @@ def main():
 		for row in range(numcol):
 			# 3 times
 			for col in range(numrow):
-				sys.stdout.write(str(c[col, row]) + ', ')
+				sys.stdout.write(str(c[col, row]) + ',\t')
 			sys.stdout.write('\n')
-		sys.stdout.write('\n')
 	#Problem 5
 	
 
