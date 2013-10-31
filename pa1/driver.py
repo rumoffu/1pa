@@ -96,7 +96,7 @@ def getFormat(c_expected):
 		bigset.append(acloud)
 	
 	final = np.vstack(bigset)
-	print final
+	return final
 
 def solveFrame(a, b):
 	from numpy import linalg as LA
