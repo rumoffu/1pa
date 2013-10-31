@@ -24,11 +24,12 @@ def main():
 	##print " d: \n%s\n a: \n%s\n c: \n%s\n " % (ptcloud_d, ptcloud_a, ptcloud_c)
 	##print " frame: \n%s\n" % ptcloud_frame
 
+	c_expected = []
 	for i in range(len(ptcloud_frame)):
 		frame_d = solveFrame(ptcloud_d, ptcloud_frame[i, 0]) #frame is ptclouds d, a, c
 		frame_a = solveFrame(ptcloud_a, ptcloud_frame[i, 1]) #frame is ptclouds d, a, c
-		frame_c = frame_d.inverse.dot(frame_a)
-		c_expected.append(frame_c.rotation*ptcloud_c + frame_c.displacement)
+		frame_c = frame_d.inverse().dot(frame_a)
+		c_expected.append(frame_c.rotation*ptcloud_c.T + frame_c.displacement)
 '''		frame_d = solveFrame(ptcloud_d, cloudframe)
 		frame_a = 
 			Frame F_C = (F_D.inverse()).dot(F_A);
@@ -138,7 +139,7 @@ def getR(maxeigvect):
 	row3 = np.hstack([ [2*(q1*q3 - q0*q2) ],		[2*(q2*q3 + q0*q1)],		[q0*q0 - q1*q1 - q2*q2 + q3*q3] ])
 	R = np.vstack([row1, row2, row3])
 	##print R
-	return R
+	return matrix(R)
 
 
 def readCalbody(txt):
